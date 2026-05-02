@@ -1,0 +1,20 @@
+# ============================================================
+# Yosys synthesis script for signed_adder
+# Project 1.1: Fixed-point arithmetic primitive
+# ============================================================
+
+read_verilog rtl/signed_adder.v
+
+hierarchy -check -top signed_adder
+
+proc
+opt
+techmap
+opt
+abc
+opt
+clean
+
+stat
+
+write_verilog synth/netlist/signed_adder_synth.v

@@ -1,0 +1,27 @@
+# Simulation generated files
+sim/*_sim
+sim/*.vvp
+sim/waveforms/*.vcd
+sim/waveforms/*.fst
+
+# Yosys generated temporary files
+synth/netlist/*.v
+synth/reports/*.log
+
+# Large OpenLane run folders
+**/runs/
+**/tmp/
+**/logs/
+
+# Temporary/editor files
+*.tmp
+*.bak
+*.swp
+*~
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Python cache
+__pycache__/
+*.pyc
