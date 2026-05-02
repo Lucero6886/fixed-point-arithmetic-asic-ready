@@ -1,0 +1,20 @@
+# ============================================================
+# Yosys synthesis script for signed_subtractor
+# Project 1.2: Fixed-point arithmetic primitive
+# ============================================================
+
+read_verilog rtl/signed_subtractor.v
+
+hierarchy -check -top signed_subtractor
+
+proc
+opt
+techmap
+opt
+abc
+opt
+clean
+
+stat
+
+write_verilog synth/netlist/signed_subtractor_synth.v
