@@ -1,0 +1,5 @@
+Project 6.1: SC Decoder N=8 Golden Model
+Number of random vectors: 1000
+LLR range: -8 to +8
+Frozen-mask convention: 1 means frozen bit forced to zero
+Bit order: u_hat[0] is LSB / first decoded bit
