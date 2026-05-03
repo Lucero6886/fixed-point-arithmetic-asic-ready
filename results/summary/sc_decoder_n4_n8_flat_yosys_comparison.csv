@@ -1,0 +1,16 @@
+metric,sc_decoder_n4,sc_decoder_n8,ratio_n8_over_n4
+wires,580,1760,3.03
+wire_bits,1302,3279,2.52
+public_wires,144,293,2.03
+public_wire_bits,866,1812,2.09
+cells,440,1475,3.35
+ANDNOT,20,87,4.35
+AND,79,236,2.99
+MUX,25,101,4.04
+NAND,141,443,3.14
+NOR,17,43,2.53
+NOT,4,12,3.00
+ORNOT,62,212,3.42
+OR,41,147,3.59
+XNOR,40,133,3.33
+XOR,11,61,5.55
