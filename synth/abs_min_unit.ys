@@ -1,0 +1,22 @@
+# ============================================================
+# Yosys synthesis script for abs_min_unit
+# Project 1.5: Absolute-Minimum Unit
+# ============================================================
+
+read_verilog rtl/abs_unit.v
+read_verilog rtl/min_comparator.v
+read_verilog rtl/abs_min_unit.v
+
+hierarchy -check -top abs_min_unit
+
+proc
+opt
+techmap
+opt
+abc
+opt
+clean
+
+stat
+
+write_verilog synth/netlist/abs_min_unit_synth.v

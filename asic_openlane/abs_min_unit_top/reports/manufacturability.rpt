@@ -1,0 +1,19 @@
+Design Name: abs_min_unit_top
+Run Directory: /openlane/designs/abs_min_unit_top/runs/RUN_2026.05.03_08.11.26
+----------------------------------------
+
+Magic DRC Summary:
+Source: /openlane/designs/abs_min_unit_top/runs/RUN_2026.05.03_08.11.26/reports/signoff/drc.rpt
+Total Magic DRC violations is 0
+----------------------------------------
+
+LVS Summary:
+Source: /openlane/designs/abs_min_unit_top/runs/RUN_2026.05.03_08.11.26/logs/signoff/39-abs_min_unit_top.lef.lvs.log
+Number of nets: 108                        |Number of nets: 108                        
+Design is LVS clean.
+----------------------------------------
+
+Antenna Summary:
+Source: /openlane/designs/abs_min_unit_top/runs/RUN_2026.05.03_08.11.26/logs/signoff/41-arc.log
+Pin violations: 0
+Net violations: 0
