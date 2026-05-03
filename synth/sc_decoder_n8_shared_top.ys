@@ -1,0 +1,23 @@
+# ============================================================
+# Yosys synthesis script for sc_decoder_n8_shared_top
+# Project 7.5: OpenLane implementation of resource-shared N=8
+# ============================================================
+
+read_verilog rtl/sc_decoder_n8_shared.v
+read_verilog rtl/sc_decoder_n8_shared_top.v
+
+hierarchy -check -top sc_decoder_n8_shared_top
+
+proc
+opt
+fsm
+opt
+techmap
+opt
+abc
+opt
+clean
+
+stat
+
+write_verilog synth/netlist/sc_decoder_n8_shared_top_synth.v
