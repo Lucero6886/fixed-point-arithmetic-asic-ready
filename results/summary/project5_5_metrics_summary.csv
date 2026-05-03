@@ -1,0 +1,3 @@
+module,design_name,flow_status,CLOCK_PERIOD,DIEAREA_mm^2,synth_cell_count,wire_length,vias,wns,tns,critical_path_ns,suggested_clock_frequency,Magic_violations,pin_antenna_violations,net_antenna_violations,STD_CELL_LIBRARY
+polar_encoder_n8_top,polar_encoder_n8_top,flow completed,10,0.0196,37,2338,334,0.0,0.0,1.02,100.0,0,0,0,sky130_fd_sc_hd
+sc_decoder_n4_top,sc_decoder_n4_top,flow completed,20,0.1156,343,15846,3020,0.0,0.0,10.81,50.0,0,0,0,sky130_fd_sc_hd
