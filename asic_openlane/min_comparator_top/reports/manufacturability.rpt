@@ -1,0 +1,19 @@
+Design Name: min_comparator_top
+Run Directory: /openlane/designs/min_comparator_top/runs/RUN_2026.05.03_07.54.39
+----------------------------------------
+
+Magic DRC Summary:
+Source: /openlane/designs/min_comparator_top/runs/RUN_2026.05.03_07.54.39/reports/signoff/drc.rpt
+Total Magic DRC violations is 0
+----------------------------------------
+
+LVS Summary:
+Source: /openlane/designs/min_comparator_top/runs/RUN_2026.05.03_07.54.39/logs/signoff/39-min_comparator_top.lef.lvs.log
+Number of nets: 87                         |Number of nets: 87                         
+Design is LVS clean.
+----------------------------------------
+
+Antenna Summary:
+Source: /openlane/designs/min_comparator_top/runs/RUN_2026.05.03_07.54.39/logs/signoff/41-arc.log
+Pin violations: 0
+Net violations: 0

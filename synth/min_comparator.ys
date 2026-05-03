@@ -1,0 +1,20 @@
+# ============================================================
+# Yosys synthesis script for min_comparator
+# Project 1.4: Minimum Comparator Unit
+# ============================================================
+
+read_verilog rtl/min_comparator.v
+
+hierarchy -check -top min_comparator
+
+proc
+opt
+techmap
+opt
+abc
+opt
+clean
+
+stat
+
+write_verilog synth/netlist/min_comparator_synth.v
