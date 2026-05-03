@@ -5,16 +5,16 @@
 | Design | Wires | Wire bits | Total cells | DFF/DFFE | Est. comb cells | MUX | XOR/XNOR | NAND |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
 | combinational_n8 | 1760 | 3279 | 1475 | 0 | 1475 | 101 | 194 | 443 |
-| scheduled_n8 | 2449 | 3931 | 2527 | 355 | 2172 | 124 | 233 | 840 |
-| resource_shared_n8 | 826 | 1282 | 967 | 397 | 570 | 20 | 24 | 309 |
+| scheduled_n8 | 2449 | 3931 | 2527 | 178 | 2349 | 124 | 233 | 840 |
+| resource_shared_n8 | 826 | 1282 | 967 | 199 | 768 | 20 | 24 | 309 |
 
 ## Ratios Relative To Combinational Baseline
 
 | Design | Total cells ratio | Est. comb cells ratio | MUX ratio | DFF/DFFE cells |
 |---|---:|---:|---:|---:|
 | combinational_n8 | 1.00× | 1.00× | 1.00× | 0 |
-| scheduled_n8 | 1.71× | 1.47× | 1.23× | 355 |
-| resource_shared_n8 | 0.66× | 0.39× | 0.20× | 397 |
+| scheduled_n8 | 1.71× | 1.59× | 1.23× | 178 |
+| resource_shared_n8 | 0.66× | 0.52× | 0.20× | 199 |
 
 ## Cell Breakdown
 

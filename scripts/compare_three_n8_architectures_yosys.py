@@ -85,8 +85,9 @@ for item in targets:
     cells = extract_cells(block)
 
     total_cells = get_int(r"Number of cells:\s+(\d+)", block)
-    dff_cells = sum_cells(cells, ["DFF"])
-    dffe_cells = sum_cells(cells, ["DFFE"])
+    # Count sequential cells once.
+    # Important: DFFE contains the substring DFF, so do not count DFF and DFFE separately.
+    seq_cells = sum(v for k, v in cells.items() if re.search(r"\$_DFF(E)?", k, re.IGNORECASE))
     mux_cells = sum_cells(cells, ["MUX"])
     xor_xnor_cells = sum_cells(cells, ["XOR", "XNOR"])
     nand_cells = sum_cells(cells, ["NAND"])
@@ -106,8 +107,8 @@ for item in targets:
         "memories": get_int(r"Number of memories:\s+(\d+)", block),
         "processes": get_int(r"Number of processes:\s+(\d+)", block),
         "total_cells": total_cells,
-        "dff_dffe_cells": dff_cells + dffe_cells,
-        "estimated_comb_cells": total_cells - dff_cells - dffe_cells,
+        "dff_dffe_cells": seq_cells,
+        "estimated_comb_cells": total_cells - seq_cells,
         "mux_cells": mux_cells,
         "xor_xnor_cells": xor_xnor_cells,
         "nand_cells": nand_cells,
