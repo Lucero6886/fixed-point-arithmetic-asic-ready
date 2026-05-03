@@ -1,0 +1,22 @@
+# ============================================================
+# Yosys synthesis script for sc_decoder_n8_shared
+# Project 7.4: Three-architecture comparison
+# ============================================================
+
+read_verilog rtl/sc_decoder_n8_shared.v
+
+hierarchy -check -top sc_decoder_n8_shared
+
+proc
+opt
+fsm
+opt
+techmap
+opt
+abc
+opt
+clean
+
+stat
+
+write_verilog synth/netlist/sc_decoder_n8_shared_synth.v

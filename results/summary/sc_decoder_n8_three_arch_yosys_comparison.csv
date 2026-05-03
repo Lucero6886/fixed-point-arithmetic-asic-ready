@@ -1,0 +1,4 @@
+design,module,latency_note,wires,wire_bits,public_wires,public_wire_bits,memories,processes,total_cells,dff_dffe_cells,estimated_comb_cells,mux_cells,xor_xnor_cells,nand_cells,and_cells,andnot_cells,or_cells,ornot_cells
+combinational_n8,sc_decoder_n8,1-cycle combinational baseline,1760,3279,293,1812,0,0,1475,0,1475,101,194,443,236,87,147,212
+scheduled_n8,sc_decoder_n8_scheduled,multi-cycle FSM baseline,2449,3931,184,1514,0,0,2527,355,2172,124,233,840,409,112,198,377
+resource_shared_n8,sc_decoder_n8_shared,multi-cycle resource-shared baseline,826,1282,72,520,0,0,967,397,570,20,24,309,259,33,43,46
