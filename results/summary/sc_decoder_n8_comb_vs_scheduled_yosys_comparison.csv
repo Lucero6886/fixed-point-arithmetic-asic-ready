@@ -1,0 +1,3 @@
+design,module,wires,wire_bits,public_wires,public_wire_bits,memories,processes,total_cells,dff_cells,comb_cells_est,mux_cells,xor_xnor_cells
+sc_decoder_n8_comb,sc_decoder_n8,1760,3279,293,1812,0,0,1475,0,1475,101,194
+sc_decoder_n8_scheduled,sc_decoder_n8_scheduled,2449,3931,184,1514,0,0,2527,178,2349,124,233

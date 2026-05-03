@@ -1,0 +1,22 @@
+# ============================================================
+# Yosys synthesis script for sc_decoder_n8_scheduled
+# Project 7.2: Scheduled vs Combinational N=8 Comparison
+# ============================================================
+
+read_verilog rtl/sc_decoder_n8_scheduled.v
+
+hierarchy -check -top sc_decoder_n8_scheduled
+
+proc
+opt
+fsm
+opt
+techmap
+opt
+abc
+opt
+clean
+
+stat
+
+write_verilog synth/netlist/sc_decoder_n8_scheduled_synth.v
