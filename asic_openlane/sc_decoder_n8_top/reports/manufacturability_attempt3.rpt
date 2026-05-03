@@ -1,0 +1,19 @@
+Design Name: sc_decoder_n8_top
+Run Directory: /openlane/designs/sc_decoder_n8_top/runs/RUN_2026.05.03_11.49.11
+----------------------------------------
+
+Magic DRC Summary:
+Source: /openlane/designs/sc_decoder_n8_top/runs/RUN_2026.05.03_11.49.11/reports/signoff/drc.rpt
+Total Magic DRC violations is 0
+----------------------------------------
+
+LVS Summary:
+Source: /openlane/designs/sc_decoder_n8_top/runs/RUN_2026.05.03_11.49.11/logs/signoff/43-sc_decoder_n8_top.lef.lvs.log
+Number of nets: 1512                       |Number of nets: 1512                       
+Design is LVS clean.
+----------------------------------------
+
+Antenna Summary:
+Source: /openlane/designs/sc_decoder_n8_top/runs/RUN_2026.05.03_11.49.11/logs/signoff/45-arc.log
+Pin violations: 1
+Net violations: 1
