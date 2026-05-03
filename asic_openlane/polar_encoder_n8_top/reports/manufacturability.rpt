@@ -1,0 +1,19 @@
+Design Name: polar_encoder_n8_top
+Run Directory: /openlane/designs/polar_encoder_n8_top/runs/RUN_2026.05.03_09.29.09
+----------------------------------------
+
+Magic DRC Summary:
+Source: /openlane/designs/polar_encoder_n8_top/runs/RUN_2026.05.03_09.29.09/reports/signoff/drc.rpt
+Total Magic DRC violations is 0
+----------------------------------------
+
+LVS Summary:
+Source: /openlane/designs/polar_encoder_n8_top/runs/RUN_2026.05.03_09.29.09/logs/signoff/39-polar_encoder_n8_top.lef.lvs.log
+Number of nets: 74                         |Number of nets: 74                         
+Design is LVS clean.
+----------------------------------------
+
+Antenna Summary:
+Source: /openlane/designs/polar_encoder_n8_top/runs/RUN_2026.05.03_09.29.09/logs/signoff/41-arc.log
+Pin violations: 0
+Net violations: 0

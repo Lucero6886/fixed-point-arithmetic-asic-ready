@@ -1,0 +1,20 @@
+# ============================================================
+# Yosys synthesis script for polar_encoder_n8
+# Project 4: Polar Encoder N=8
+# ============================================================
+
+read_verilog rtl/polar_encoder_n8.v
+
+hierarchy -check -top polar_encoder_n8
+
+proc
+opt
+techmap
+opt
+abc
+opt
+clean
+
+stat
+
+write_verilog synth/netlist/polar_encoder_n8_synth.v
