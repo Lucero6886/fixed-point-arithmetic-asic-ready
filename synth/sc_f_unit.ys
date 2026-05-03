@@ -1,0 +1,23 @@
+# ============================================================
+# Yosys synthesis script for sc_f_unit
+# Project 2: SC f Unit
+# ============================================================
+
+read_verilog rtl/abs_unit.v
+read_verilog rtl/min_comparator.v
+read_verilog rtl/abs_min_unit.v
+read_verilog rtl/sc_f_unit.v
+
+hierarchy -check -top sc_f_unit
+
+proc
+opt
+techmap
+opt
+abc
+opt
+clean
+
+stat
+
+write_verilog synth/netlist/sc_f_unit_synth.v
