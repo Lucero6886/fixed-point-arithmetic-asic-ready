@@ -37,5 +37,3 @@ Specification
 → GDSII
 → DRC / LVS / Antenna / Timing
 → Report / Git / Review
-
-
