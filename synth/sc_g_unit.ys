@@ -1,0 +1,22 @@
+# ============================================================
+# Yosys synthesis script for sc_g_unit
+# Project 3: SC g Unit
+# ============================================================
+
+read_verilog rtl/signed_adder.v
+read_verilog rtl/signed_subtractor.v
+read_verilog rtl/sc_g_unit.v
+
+hierarchy -check -top sc_g_unit
+
+proc
+opt
+techmap
+opt
+abc
+opt
+clean
+
+stat
+
+write_verilog synth/netlist/sc_g_unit_synth.v
