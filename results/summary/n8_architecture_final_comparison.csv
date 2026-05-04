@@ -1,0 +1,4 @@
+architecture,functional_verification,yosys_total_cells,yosys_dff_dffe,yosys_est_comb_cells,openlane_clean_clock_ns,openlane_die_area_mm2,openlane_synth_cell_count,openlane_critical_path_ns,openlane_wire_length,openlane_vias,drc,lvs,antenna,status
+combinational_n8,1000 vectors passed,1475,0,1475,80,0.64,1361,29.01,80198,13546,0,clean,0,clean baseline
+fsm_scheduled_n8,1000 vectors passed,2527,178,2349,NA,NA,NA,NA,NA,NA,NA,NA,NA,functional baseline only
+resource_shared_n8,1000 vectors passed,967,199,768,15,0.36,1045,8.62,70864,11705,0,clean,0,best clean baseline

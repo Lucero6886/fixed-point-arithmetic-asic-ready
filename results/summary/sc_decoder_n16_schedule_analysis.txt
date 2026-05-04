@@ -1,0 +1,79 @@
+SC Decoder N=16 Recursive Schedule
+==================================
+
+- Node N=16, u[0:15]
+  1) Compute 8 f operations for left child
+  - Node N=8, u[0:7]
+    1) Compute 4 f operations for left child
+    - Node N=4, u[0:3]
+      1) Compute 2 f operations for left child
+      - Node N=2, u[0:1]
+        1) Compute 1 f operations for left child
+        - Decode u0: hard decision or frozen-to-zero
+        2) Compute partial sums using Polar Encode N=1
+        3) Compute 1 g operations for right child
+        - Decode u1: hard decision or frozen-to-zero
+      2) Compute partial sums using Polar Encode N=2
+      3) Compute 2 g operations for right child
+      - Node N=2, u[2:3]
+        1) Compute 1 f operations for left child
+        - Decode u2: hard decision or frozen-to-zero
+        2) Compute partial sums using Polar Encode N=1
+        3) Compute 1 g operations for right child
+        - Decode u3: hard decision or frozen-to-zero
+    2) Compute partial sums using Polar Encode N=4
+    3) Compute 4 g operations for right child
+    - Node N=4, u[4:7]
+      1) Compute 2 f operations for left child
+      - Node N=2, u[4:5]
+        1) Compute 1 f operations for left child
+        - Decode u4: hard decision or frozen-to-zero
+        2) Compute partial sums using Polar Encode N=1
+        3) Compute 1 g operations for right child
+        - Decode u5: hard decision or frozen-to-zero
+      2) Compute partial sums using Polar Encode N=2
+      3) Compute 2 g operations for right child
+      - Node N=2, u[6:7]
+        1) Compute 1 f operations for left child
+        - Decode u6: hard decision or frozen-to-zero
+        2) Compute partial sums using Polar Encode N=1
+        3) Compute 1 g operations for right child
+        - Decode u7: hard decision or frozen-to-zero
+  2) Compute partial sums using Polar Encode N=8
+  3) Compute 8 g operations for right child
+  - Node N=8, u[8:15]
+    1) Compute 4 f operations for left child
+    - Node N=4, u[8:11]
+      1) Compute 2 f operations for left child
+      - Node N=2, u[8:9]
+        1) Compute 1 f operations for left child
+        - Decode u8: hard decision or frozen-to-zero
+        2) Compute partial sums using Polar Encode N=1
+        3) Compute 1 g operations for right child
+        - Decode u9: hard decision or frozen-to-zero
+      2) Compute partial sums using Polar Encode N=2
+      3) Compute 2 g operations for right child
+      - Node N=2, u[10:11]
+        1) Compute 1 f operations for left child
+        - Decode u10: hard decision or frozen-to-zero
+        2) Compute partial sums using Polar Encode N=1
+        3) Compute 1 g operations for right child
+        - Decode u11: hard decision or frozen-to-zero
+    2) Compute partial sums using Polar Encode N=4
+    3) Compute 4 g operations for right child
+    - Node N=4, u[12:15]
+      1) Compute 2 f operations for left child
+      - Node N=2, u[12:13]
+        1) Compute 1 f operations for left child
+        - Decode u12: hard decision or frozen-to-zero
+        2) Compute partial sums using Polar Encode N=1
+        3) Compute 1 g operations for right child
+        - Decode u13: hard decision or frozen-to-zero
+      2) Compute partial sums using Polar Encode N=2
+      3) Compute 2 g operations for right child
+      - Node N=2, u[14:15]
+        1) Compute 1 f operations for left child
+        - Decode u14: hard decision or frozen-to-zero
+        2) Compute partial sums using Polar Encode N=1
+        3) Compute 1 g operations for right child
+        - Decode u15: hard decision or frozen-to-zero
