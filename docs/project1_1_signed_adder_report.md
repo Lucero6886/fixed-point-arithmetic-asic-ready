@@ -885,4 +885,3 @@ The design passed exhaustive RTL simulation, synthesized into a small combinatio
 This project establishes a reliable signed addition primitive for later SC Polar decoder hardware.
 
 The next step is Project 1.2: Signed Subtractor.
-EOF
