@@ -1,0 +1,2 @@
+design,wires,wire_bits,public_wires,public_wire_bits,memories,memory_bits,processes,total_cells,dff_dffe_cells_raw,estimated_comb_cells,mux_cells,xor_cells,xnor_cells,xor_xnor_cells,nand_cells,and_cells,or_cells
+sc_decoder_n16_shared,2142,3217,179,1246,0,0,0,2660,681,1979,18,20,28,48,840,894,29
