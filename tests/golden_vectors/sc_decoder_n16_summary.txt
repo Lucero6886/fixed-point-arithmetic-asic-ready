@@ -1,0 +1,34 @@
+SC Decoder Golden Vector Summary
+================================
+
+N = 16
+num_vectors = 1000
+llr_min = -8
+llr_max = 8
+seed = 20260503
+
+Conventions
+-----------
+frozen_mask[i] = 1 means frozen; force u_i = 0
+frozen_mask[i] = 0 means information bit
+hard decision: LLR < 0 -> 1, otherwise 0
+bit packing: LSB-first
+g(a,b,u): b+a if u=0, b-a if u=1
+
+Operation Count Estimate
+------------------------
+N = 16
+levels = 4
+f_ops = 32
+g_ops = 32
+hard_decisions = 16
+partial_xors_est = 24
+fg_ops_total = 64
+fg_plus_hard_decisions = 80
+latency_lower_bound_cycles = 80
+latency_conservative_est_cycles = 104
+
+Output Files
+------------
+csv_path = tests/golden_vectors/sc_decoder_n16_vectors.csv
+summary_path = tests/golden_vectors/sc_decoder_n16_summary.txt
