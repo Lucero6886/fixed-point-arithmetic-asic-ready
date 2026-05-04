@@ -1,0 +1,113 @@
+step,node,node_path,node_size,bit_offset,op_type,local_index,operand_a,operand_b,g_bit,destination,expression,comment
+0,ROOT,ROOT,16,0,F,0,L0,L8,-,llr_ROOT_L0,"llr_ROOT_L0 = f(L0, L8)",Compute left-branch LLR.
+1,ROOT,ROOT,16,0,F,1,L1,L9,-,llr_ROOT_L1,"llr_ROOT_L1 = f(L1, L9)",Compute left-branch LLR.
+2,ROOT,ROOT,16,0,F,2,L2,L10,-,llr_ROOT_L2,"llr_ROOT_L2 = f(L2, L10)",Compute left-branch LLR.
+3,ROOT,ROOT,16,0,F,3,L3,L11,-,llr_ROOT_L3,"llr_ROOT_L3 = f(L3, L11)",Compute left-branch LLR.
+4,ROOT,ROOT,16,0,F,4,L4,L12,-,llr_ROOT_L4,"llr_ROOT_L4 = f(L4, L12)",Compute left-branch LLR.
+5,ROOT,ROOT,16,0,F,5,L5,L13,-,llr_ROOT_L5,"llr_ROOT_L5 = f(L5, L13)",Compute left-branch LLR.
+6,ROOT,ROOT,16,0,F,6,L6,L14,-,llr_ROOT_L6,"llr_ROOT_L6 = f(L6, L14)",Compute left-branch LLR.
+7,ROOT,ROOT,16,0,F,7,L7,L15,-,llr_ROOT_L7,"llr_ROOT_L7 = f(L7, L15)",Compute left-branch LLR.
+8,NL,L,8,0,F,0,llr_ROOT_L0,llr_ROOT_L4,-,llr_NL_L0,"llr_NL_L0 = f(llr_ROOT_L0, llr_ROOT_L4)",Compute left-branch LLR.
+9,NL,L,8,0,F,1,llr_ROOT_L1,llr_ROOT_L5,-,llr_NL_L1,"llr_NL_L1 = f(llr_ROOT_L1, llr_ROOT_L5)",Compute left-branch LLR.
+10,NL,L,8,0,F,2,llr_ROOT_L2,llr_ROOT_L6,-,llr_NL_L2,"llr_NL_L2 = f(llr_ROOT_L2, llr_ROOT_L6)",Compute left-branch LLR.
+11,NL,L,8,0,F,3,llr_ROOT_L3,llr_ROOT_L7,-,llr_NL_L3,"llr_NL_L3 = f(llr_ROOT_L3, llr_ROOT_L7)",Compute left-branch LLR.
+12,NLL,LL,4,0,F,0,llr_NL_L0,llr_NL_L2,-,llr_NLL_L0,"llr_NLL_L0 = f(llr_NL_L0, llr_NL_L2)",Compute left-branch LLR.
+13,NLL,LL,4,0,F,1,llr_NL_L1,llr_NL_L3,-,llr_NLL_L1,"llr_NLL_L1 = f(llr_NL_L1, llr_NL_L3)",Compute left-branch LLR.
+14,NLLL,LLL,2,0,F,0,llr_NLL_L0,llr_NLL_L1,-,llr_NLLL_L0,"llr_NLLL_L0 = f(llr_NLL_L0, llr_NLL_L1)",Compute left-branch LLR.
+15,NLLLL,LLLL,1,0,DECISION,0,llr_NLLL_L0,-,-,u0,u0 = 0 if frozen0=1 else hard_decision(llr_NLLL_L0),Leaf hard decision with frozen-mask control.
+16,NLLL,LLL,2,0,PARTIAL,0,u0,-,-,p_NLLL_0,p_NLLL_0 = u0,Partial sum used as g-control bit.
+17,NLLL,LLL,2,0,G,0,llr_NLL_L0,llr_NLL_L1,p_NLLL_0,llr_NLLL_R0,"llr_NLLL_R0 = g(llr_NLL_L0, llr_NLL_L1, p_NLLL_0)",Compute right-branch LLR.
+18,NLLLR,LLLR,1,1,DECISION,0,llr_NLLL_R0,-,-,u1,u1 = 0 if frozen1=1 else hard_decision(llr_NLLL_R0),Leaf hard decision with frozen-mask control.
+19,NLL,LL,4,0,PARTIAL,0,u0 ^ u1,-,-,p_NLL_0,p_NLL_0 = u0 ^ u1,Partial sum used as g-control bit.
+20,NLL,LL,4,0,PARTIAL,1,u1,-,-,p_NLL_1,p_NLL_1 = u1,Partial sum used as g-control bit.
+21,NLL,LL,4,0,G,0,llr_NL_L0,llr_NL_L2,p_NLL_0,llr_NLL_R0,"llr_NLL_R0 = g(llr_NL_L0, llr_NL_L2, p_NLL_0)",Compute right-branch LLR.
+22,NLL,LL,4,0,G,1,llr_NL_L1,llr_NL_L3,p_NLL_1,llr_NLL_R1,"llr_NLL_R1 = g(llr_NL_L1, llr_NL_L3, p_NLL_1)",Compute right-branch LLR.
+23,NLLR,LLR,2,2,F,0,llr_NLL_R0,llr_NLL_R1,-,llr_NLLR_L0,"llr_NLLR_L0 = f(llr_NLL_R0, llr_NLL_R1)",Compute left-branch LLR.
+24,NLLRL,LLRL,1,2,DECISION,0,llr_NLLR_L0,-,-,u2,u2 = 0 if frozen2=1 else hard_decision(llr_NLLR_L0),Leaf hard decision with frozen-mask control.
+25,NLLR,LLR,2,2,PARTIAL,0,u2,-,-,p_NLLR_0,p_NLLR_0 = u2,Partial sum used as g-control bit.
+26,NLLR,LLR,2,2,G,0,llr_NLL_R0,llr_NLL_R1,p_NLLR_0,llr_NLLR_R0,"llr_NLLR_R0 = g(llr_NLL_R0, llr_NLL_R1, p_NLLR_0)",Compute right-branch LLR.
+27,NLLRR,LLRR,1,3,DECISION,0,llr_NLLR_R0,-,-,u3,u3 = 0 if frozen3=1 else hard_decision(llr_NLLR_R0),Leaf hard decision with frozen-mask control.
+28,NL,L,8,0,PARTIAL,0,u0 ^ u1 ^ u2 ^ u3,-,-,p_NL_0,p_NL_0 = u0 ^ u1 ^ u2 ^ u3,Partial sum used as g-control bit.
+29,NL,L,8,0,PARTIAL,1,u1 ^ u3,-,-,p_NL_1,p_NL_1 = u1 ^ u3,Partial sum used as g-control bit.
+30,NL,L,8,0,PARTIAL,2,u2 ^ u3,-,-,p_NL_2,p_NL_2 = u2 ^ u3,Partial sum used as g-control bit.
+31,NL,L,8,0,PARTIAL,3,u3,-,-,p_NL_3,p_NL_3 = u3,Partial sum used as g-control bit.
+32,NL,L,8,0,G,0,llr_ROOT_L0,llr_ROOT_L4,p_NL_0,llr_NL_R0,"llr_NL_R0 = g(llr_ROOT_L0, llr_ROOT_L4, p_NL_0)",Compute right-branch LLR.
+33,NL,L,8,0,G,1,llr_ROOT_L1,llr_ROOT_L5,p_NL_1,llr_NL_R1,"llr_NL_R1 = g(llr_ROOT_L1, llr_ROOT_L5, p_NL_1)",Compute right-branch LLR.
+34,NL,L,8,0,G,2,llr_ROOT_L2,llr_ROOT_L6,p_NL_2,llr_NL_R2,"llr_NL_R2 = g(llr_ROOT_L2, llr_ROOT_L6, p_NL_2)",Compute right-branch LLR.
+35,NL,L,8,0,G,3,llr_ROOT_L3,llr_ROOT_L7,p_NL_3,llr_NL_R3,"llr_NL_R3 = g(llr_ROOT_L3, llr_ROOT_L7, p_NL_3)",Compute right-branch LLR.
+36,NLR,LR,4,4,F,0,llr_NL_R0,llr_NL_R2,-,llr_NLR_L0,"llr_NLR_L0 = f(llr_NL_R0, llr_NL_R2)",Compute left-branch LLR.
+37,NLR,LR,4,4,F,1,llr_NL_R1,llr_NL_R3,-,llr_NLR_L1,"llr_NLR_L1 = f(llr_NL_R1, llr_NL_R3)",Compute left-branch LLR.
+38,NLRL,LRL,2,4,F,0,llr_NLR_L0,llr_NLR_L1,-,llr_NLRL_L0,"llr_NLRL_L0 = f(llr_NLR_L0, llr_NLR_L1)",Compute left-branch LLR.
+39,NLRLL,LRLL,1,4,DECISION,0,llr_NLRL_L0,-,-,u4,u4 = 0 if frozen4=1 else hard_decision(llr_NLRL_L0),Leaf hard decision with frozen-mask control.
+40,NLRL,LRL,2,4,PARTIAL,0,u4,-,-,p_NLRL_0,p_NLRL_0 = u4,Partial sum used as g-control bit.
+41,NLRL,LRL,2,4,G,0,llr_NLR_L0,llr_NLR_L1,p_NLRL_0,llr_NLRL_R0,"llr_NLRL_R0 = g(llr_NLR_L0, llr_NLR_L1, p_NLRL_0)",Compute right-branch LLR.
+42,NLRLR,LRLR,1,5,DECISION,0,llr_NLRL_R0,-,-,u5,u5 = 0 if frozen5=1 else hard_decision(llr_NLRL_R0),Leaf hard decision with frozen-mask control.
+43,NLR,LR,4,4,PARTIAL,0,u4 ^ u5,-,-,p_NLR_0,p_NLR_0 = u4 ^ u5,Partial sum used as g-control bit.
+44,NLR,LR,4,4,PARTIAL,1,u5,-,-,p_NLR_1,p_NLR_1 = u5,Partial sum used as g-control bit.
+45,NLR,LR,4,4,G,0,llr_NL_R0,llr_NL_R2,p_NLR_0,llr_NLR_R0,"llr_NLR_R0 = g(llr_NL_R0, llr_NL_R2, p_NLR_0)",Compute right-branch LLR.
+46,NLR,LR,4,4,G,1,llr_NL_R1,llr_NL_R3,p_NLR_1,llr_NLR_R1,"llr_NLR_R1 = g(llr_NL_R1, llr_NL_R3, p_NLR_1)",Compute right-branch LLR.
+47,NLRR,LRR,2,6,F,0,llr_NLR_R0,llr_NLR_R1,-,llr_NLRR_L0,"llr_NLRR_L0 = f(llr_NLR_R0, llr_NLR_R1)",Compute left-branch LLR.
+48,NLRRL,LRRL,1,6,DECISION,0,llr_NLRR_L0,-,-,u6,u6 = 0 if frozen6=1 else hard_decision(llr_NLRR_L0),Leaf hard decision with frozen-mask control.
+49,NLRR,LRR,2,6,PARTIAL,0,u6,-,-,p_NLRR_0,p_NLRR_0 = u6,Partial sum used as g-control bit.
+50,NLRR,LRR,2,6,G,0,llr_NLR_R0,llr_NLR_R1,p_NLRR_0,llr_NLRR_R0,"llr_NLRR_R0 = g(llr_NLR_R0, llr_NLR_R1, p_NLRR_0)",Compute right-branch LLR.
+51,NLRRR,LRRR,1,7,DECISION,0,llr_NLRR_R0,-,-,u7,u7 = 0 if frozen7=1 else hard_decision(llr_NLRR_R0),Leaf hard decision with frozen-mask control.
+52,ROOT,ROOT,16,0,PARTIAL,0,u0 ^ u1 ^ u2 ^ u3 ^ u4 ^ u5 ^ u6 ^ u7,-,-,p_ROOT_0,p_ROOT_0 = u0 ^ u1 ^ u2 ^ u3 ^ u4 ^ u5 ^ u6 ^ u7,Partial sum used as g-control bit.
+53,ROOT,ROOT,16,0,PARTIAL,1,u1 ^ u3 ^ u5 ^ u7,-,-,p_ROOT_1,p_ROOT_1 = u1 ^ u3 ^ u5 ^ u7,Partial sum used as g-control bit.
+54,ROOT,ROOT,16,0,PARTIAL,2,u2 ^ u3 ^ u6 ^ u7,-,-,p_ROOT_2,p_ROOT_2 = u2 ^ u3 ^ u6 ^ u7,Partial sum used as g-control bit.
+55,ROOT,ROOT,16,0,PARTIAL,3,u3 ^ u7,-,-,p_ROOT_3,p_ROOT_3 = u3 ^ u7,Partial sum used as g-control bit.
+56,ROOT,ROOT,16,0,PARTIAL,4,u4 ^ u5 ^ u6 ^ u7,-,-,p_ROOT_4,p_ROOT_4 = u4 ^ u5 ^ u6 ^ u7,Partial sum used as g-control bit.
+57,ROOT,ROOT,16,0,PARTIAL,5,u5 ^ u7,-,-,p_ROOT_5,p_ROOT_5 = u5 ^ u7,Partial sum used as g-control bit.
+58,ROOT,ROOT,16,0,PARTIAL,6,u6 ^ u7,-,-,p_ROOT_6,p_ROOT_6 = u6 ^ u7,Partial sum used as g-control bit.
+59,ROOT,ROOT,16,0,PARTIAL,7,u7,-,-,p_ROOT_7,p_ROOT_7 = u7,Partial sum used as g-control bit.
+60,ROOT,ROOT,16,0,G,0,L0,L8,p_ROOT_0,llr_ROOT_R0,"llr_ROOT_R0 = g(L0, L8, p_ROOT_0)",Compute right-branch LLR.
+61,ROOT,ROOT,16,0,G,1,L1,L9,p_ROOT_1,llr_ROOT_R1,"llr_ROOT_R1 = g(L1, L9, p_ROOT_1)",Compute right-branch LLR.
+62,ROOT,ROOT,16,0,G,2,L2,L10,p_ROOT_2,llr_ROOT_R2,"llr_ROOT_R2 = g(L2, L10, p_ROOT_2)",Compute right-branch LLR.
+63,ROOT,ROOT,16,0,G,3,L3,L11,p_ROOT_3,llr_ROOT_R3,"llr_ROOT_R3 = g(L3, L11, p_ROOT_3)",Compute right-branch LLR.
+64,ROOT,ROOT,16,0,G,4,L4,L12,p_ROOT_4,llr_ROOT_R4,"llr_ROOT_R4 = g(L4, L12, p_ROOT_4)",Compute right-branch LLR.
+65,ROOT,ROOT,16,0,G,5,L5,L13,p_ROOT_5,llr_ROOT_R5,"llr_ROOT_R5 = g(L5, L13, p_ROOT_5)",Compute right-branch LLR.
+66,ROOT,ROOT,16,0,G,6,L6,L14,p_ROOT_6,llr_ROOT_R6,"llr_ROOT_R6 = g(L6, L14, p_ROOT_6)",Compute right-branch LLR.
+67,ROOT,ROOT,16,0,G,7,L7,L15,p_ROOT_7,llr_ROOT_R7,"llr_ROOT_R7 = g(L7, L15, p_ROOT_7)",Compute right-branch LLR.
+68,NR,R,8,8,F,0,llr_ROOT_R0,llr_ROOT_R4,-,llr_NR_L0,"llr_NR_L0 = f(llr_ROOT_R0, llr_ROOT_R4)",Compute left-branch LLR.
+69,NR,R,8,8,F,1,llr_ROOT_R1,llr_ROOT_R5,-,llr_NR_L1,"llr_NR_L1 = f(llr_ROOT_R1, llr_ROOT_R5)",Compute left-branch LLR.
+70,NR,R,8,8,F,2,llr_ROOT_R2,llr_ROOT_R6,-,llr_NR_L2,"llr_NR_L2 = f(llr_ROOT_R2, llr_ROOT_R6)",Compute left-branch LLR.
+71,NR,R,8,8,F,3,llr_ROOT_R3,llr_ROOT_R7,-,llr_NR_L3,"llr_NR_L3 = f(llr_ROOT_R3, llr_ROOT_R7)",Compute left-branch LLR.
+72,NRL,RL,4,8,F,0,llr_NR_L0,llr_NR_L2,-,llr_NRL_L0,"llr_NRL_L0 = f(llr_NR_L0, llr_NR_L2)",Compute left-branch LLR.
+73,NRL,RL,4,8,F,1,llr_NR_L1,llr_NR_L3,-,llr_NRL_L1,"llr_NRL_L1 = f(llr_NR_L1, llr_NR_L3)",Compute left-branch LLR.
+74,NRLL,RLL,2,8,F,0,llr_NRL_L0,llr_NRL_L1,-,llr_NRLL_L0,"llr_NRLL_L0 = f(llr_NRL_L0, llr_NRL_L1)",Compute left-branch LLR.
+75,NRLLL,RLLL,1,8,DECISION,0,llr_NRLL_L0,-,-,u8,u8 = 0 if frozen8=1 else hard_decision(llr_NRLL_L0),Leaf hard decision with frozen-mask control.
+76,NRLL,RLL,2,8,PARTIAL,0,u8,-,-,p_NRLL_0,p_NRLL_0 = u8,Partial sum used as g-control bit.
+77,NRLL,RLL,2,8,G,0,llr_NRL_L0,llr_NRL_L1,p_NRLL_0,llr_NRLL_R0,"llr_NRLL_R0 = g(llr_NRL_L0, llr_NRL_L1, p_NRLL_0)",Compute right-branch LLR.
+78,NRLLR,RLLR,1,9,DECISION,0,llr_NRLL_R0,-,-,u9,u9 = 0 if frozen9=1 else hard_decision(llr_NRLL_R0),Leaf hard decision with frozen-mask control.
+79,NRL,RL,4,8,PARTIAL,0,u8 ^ u9,-,-,p_NRL_0,p_NRL_0 = u8 ^ u9,Partial sum used as g-control bit.
+80,NRL,RL,4,8,PARTIAL,1,u9,-,-,p_NRL_1,p_NRL_1 = u9,Partial sum used as g-control bit.
+81,NRL,RL,4,8,G,0,llr_NR_L0,llr_NR_L2,p_NRL_0,llr_NRL_R0,"llr_NRL_R0 = g(llr_NR_L0, llr_NR_L2, p_NRL_0)",Compute right-branch LLR.
+82,NRL,RL,4,8,G,1,llr_NR_L1,llr_NR_L3,p_NRL_1,llr_NRL_R1,"llr_NRL_R1 = g(llr_NR_L1, llr_NR_L3, p_NRL_1)",Compute right-branch LLR.
+83,NRLR,RLR,2,10,F,0,llr_NRL_R0,llr_NRL_R1,-,llr_NRLR_L0,"llr_NRLR_L0 = f(llr_NRL_R0, llr_NRL_R1)",Compute left-branch LLR.
+84,NRLRL,RLRL,1,10,DECISION,0,llr_NRLR_L0,-,-,u10,u10 = 0 if frozen10=1 else hard_decision(llr_NRLR_L0),Leaf hard decision with frozen-mask control.
+85,NRLR,RLR,2,10,PARTIAL,0,u10,-,-,p_NRLR_0,p_NRLR_0 = u10,Partial sum used as g-control bit.
+86,NRLR,RLR,2,10,G,0,llr_NRL_R0,llr_NRL_R1,p_NRLR_0,llr_NRLR_R0,"llr_NRLR_R0 = g(llr_NRL_R0, llr_NRL_R1, p_NRLR_0)",Compute right-branch LLR.
+87,NRLRR,RLRR,1,11,DECISION,0,llr_NRLR_R0,-,-,u11,u11 = 0 if frozen11=1 else hard_decision(llr_NRLR_R0),Leaf hard decision with frozen-mask control.
+88,NR,R,8,8,PARTIAL,0,u8 ^ u9 ^ u10 ^ u11,-,-,p_NR_0,p_NR_0 = u8 ^ u9 ^ u10 ^ u11,Partial sum used as g-control bit.
+89,NR,R,8,8,PARTIAL,1,u9 ^ u11,-,-,p_NR_1,p_NR_1 = u9 ^ u11,Partial sum used as g-control bit.
+90,NR,R,8,8,PARTIAL,2,u10 ^ u11,-,-,p_NR_2,p_NR_2 = u10 ^ u11,Partial sum used as g-control bit.
+91,NR,R,8,8,PARTIAL,3,u11,-,-,p_NR_3,p_NR_3 = u11,Partial sum used as g-control bit.
+92,NR,R,8,8,G,0,llr_ROOT_R0,llr_ROOT_R4,p_NR_0,llr_NR_R0,"llr_NR_R0 = g(llr_ROOT_R0, llr_ROOT_R4, p_NR_0)",Compute right-branch LLR.
+93,NR,R,8,8,G,1,llr_ROOT_R1,llr_ROOT_R5,p_NR_1,llr_NR_R1,"llr_NR_R1 = g(llr_ROOT_R1, llr_ROOT_R5, p_NR_1)",Compute right-branch LLR.
+94,NR,R,8,8,G,2,llr_ROOT_R2,llr_ROOT_R6,p_NR_2,llr_NR_R2,"llr_NR_R2 = g(llr_ROOT_R2, llr_ROOT_R6, p_NR_2)",Compute right-branch LLR.
+95,NR,R,8,8,G,3,llr_ROOT_R3,llr_ROOT_R7,p_NR_3,llr_NR_R3,"llr_NR_R3 = g(llr_ROOT_R3, llr_ROOT_R7, p_NR_3)",Compute right-branch LLR.
+96,NRR,RR,4,12,F,0,llr_NR_R0,llr_NR_R2,-,llr_NRR_L0,"llr_NRR_L0 = f(llr_NR_R0, llr_NR_R2)",Compute left-branch LLR.
+97,NRR,RR,4,12,F,1,llr_NR_R1,llr_NR_R3,-,llr_NRR_L1,"llr_NRR_L1 = f(llr_NR_R1, llr_NR_R3)",Compute left-branch LLR.
+98,NRRL,RRL,2,12,F,0,llr_NRR_L0,llr_NRR_L1,-,llr_NRRL_L0,"llr_NRRL_L0 = f(llr_NRR_L0, llr_NRR_L1)",Compute left-branch LLR.
+99,NRRLL,RRLL,1,12,DECISION,0,llr_NRRL_L0,-,-,u12,u12 = 0 if frozen12=1 else hard_decision(llr_NRRL_L0),Leaf hard decision with frozen-mask control.
+100,NRRL,RRL,2,12,PARTIAL,0,u12,-,-,p_NRRL_0,p_NRRL_0 = u12,Partial sum used as g-control bit.
+101,NRRL,RRL,2,12,G,0,llr_NRR_L0,llr_NRR_L1,p_NRRL_0,llr_NRRL_R0,"llr_NRRL_R0 = g(llr_NRR_L0, llr_NRR_L1, p_NRRL_0)",Compute right-branch LLR.
+102,NRRLR,RRLR,1,13,DECISION,0,llr_NRRL_R0,-,-,u13,u13 = 0 if frozen13=1 else hard_decision(llr_NRRL_R0),Leaf hard decision with frozen-mask control.
+103,NRR,RR,4,12,PARTIAL,0,u12 ^ u13,-,-,p_NRR_0,p_NRR_0 = u12 ^ u13,Partial sum used as g-control bit.
+104,NRR,RR,4,12,PARTIAL,1,u13,-,-,p_NRR_1,p_NRR_1 = u13,Partial sum used as g-control bit.
+105,NRR,RR,4,12,G,0,llr_NR_R0,llr_NR_R2,p_NRR_0,llr_NRR_R0,"llr_NRR_R0 = g(llr_NR_R0, llr_NR_R2, p_NRR_0)",Compute right-branch LLR.
+106,NRR,RR,4,12,G,1,llr_NR_R1,llr_NR_R3,p_NRR_1,llr_NRR_R1,"llr_NRR_R1 = g(llr_NR_R1, llr_NR_R3, p_NRR_1)",Compute right-branch LLR.
+107,NRRR,RRR,2,14,F,0,llr_NRR_R0,llr_NRR_R1,-,llr_NRRR_L0,"llr_NRRR_L0 = f(llr_NRR_R0, llr_NRR_R1)",Compute left-branch LLR.
+108,NRRRL,RRRL,1,14,DECISION,0,llr_NRRR_L0,-,-,u14,u14 = 0 if frozen14=1 else hard_decision(llr_NRRR_L0),Leaf hard decision with frozen-mask control.
+109,NRRR,RRR,2,14,PARTIAL,0,u14,-,-,p_NRRR_0,p_NRRR_0 = u14,Partial sum used as g-control bit.
+110,NRRR,RRR,2,14,G,0,llr_NRR_R0,llr_NRR_R1,p_NRRR_0,llr_NRRR_R0,"llr_NRRR_R0 = g(llr_NRR_R0, llr_NRR_R1, p_NRRR_0)",Compute right-branch LLR.
+111,NRRRR,RRRR,1,15,DECISION,0,llr_NRRR_R0,-,-,u15,u15 = 0 if frozen15=1 else hard_decision(llr_NRRR_R0),Leaf hard decision with frozen-mask control.

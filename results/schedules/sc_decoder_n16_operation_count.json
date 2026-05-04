@@ -1,0 +1,29 @@
+{
+  "actual": {
+    "F": 32,
+    "G": 32,
+    "DECISION": 16,
+    "PARTIAL": 32,
+    "TOTAL_ROWS": 112
+  },
+  "expected": {
+    "F": 32,
+    "G": 32,
+    "DECISION": 16,
+    "PARTIAL": 32
+  },
+  "operation_count": {
+    "N": 16,
+    "levels": 4,
+    "f_ops": 32,
+    "g_ops": 32,
+    "hard_decisions": 16,
+    "partial_output_rows": 32,
+    "partial_xors_est_staged": 24,
+    "fg_ops_total": 64,
+    "fg_plus_hard_decisions": 80,
+    "latency_lower_bound_cycles": 80,
+    "latency_if_partial_outputs_one_cycle_each": 112,
+    "latency_conservative_est_cycles": 104
+  }
+}
