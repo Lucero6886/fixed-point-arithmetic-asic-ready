@@ -6,23 +6,24 @@ Project 8.1 starts the transition from SC Decoder N=8 to SC Decoder N=16.
 
 The main objective is not to write RTL immediately.
 
-The main objective is to build a correct foundation for N=16 by preparing:
+The main objective is to build a correct pre-RTL foundation for N=16 through:
 
 ```text
 1. Python golden model for SC Decoder N=16
 2. Golden-vector generation flow
 3. Recursive SC schedule analysis
-4. f/g operation count
+4. f/g operation-count analysis
 5. partial-sum mapping
-6. latency estimate for resource-shared architecture
+6. latency-cycle estimation
 7. storage and register requirement analysis
-8. readiness checklist before RTL implementation
+8. resource-shared architecture planning
+9. readiness checklist before RTL implementation
 ```
 
-This project answers the question:
+The central question of Project 8.1 is:
 
 ```text
-Before writing SC Decoder N=16 RTL, do we fully understand the schedule, data dependency, partial sums, and verification flow?
+Before writing SC Decoder N=16 RTL, do we fully understand the schedule, data dependency, partial sums, verification flow, and resource-sharing requirements?
 ```
 
 The correct answer must be yes before moving to Project 8.2.
@@ -34,10 +35,10 @@ The correct answer must be yes before moving to Project 8.2.
 Project 7.7 concluded that the current best N=8 architecture is:
 
 ```text
-resource-shared scheduled SC Decoder N=8
+Resource-shared scheduled SC Decoder N=8
 ```
 
-The final N=8 OpenLane timing-push result was:
+The strongest N=8 OpenLane result was:
 
 ```text
 Design: sc_decoder_n8_shared_top
@@ -52,7 +53,7 @@ Antenna = 0
 
 However, N=8 is still small.
 
-To move toward a stronger research direction, the roadmap must scale to:
+To make the work stronger academically and technically, the roadmap must scale to:
 
 ```text
 N=16
@@ -60,7 +61,7 @@ N=32
 possibly N=64
 ```
 
-The danger is that manually writing N=16 RTL too early can create many errors:
+The danger is that manually writing N=16 RTL too early can introduce many errors:
 
 ```text
 wrong f/g schedule
@@ -70,9 +71,22 @@ wrong frozen-mask indexing
 wrong register writeback
 wrong resource-sharing sequence
 wrong latency assumption
+wrong Verilog width-growth policy
 ```
 
 Therefore, Project 8.1 focuses on the N=16 golden model and schedule analysis first.
+
+This is the correct academic sequence:
+
+```text
+golden model
+→ golden vectors
+→ schedule analysis
+→ operation count
+→ latency estimate
+→ architecture plan
+→ RTL implementation
+```
 
 ---
 
@@ -88,13 +102,13 @@ Project 8.1:
     Build SC Decoder N=16 golden model and schedule analysis.
 
 Project 8.2:
-    Implement combinational or reference RTL SC Decoder N=16.
+    Implement SC Decoder N=16 reference RTL baseline.
 
 Project 8.3:
-    Implement scheduled/resource-shared SC Decoder N=16.
+    Implement resource-shared scheduled SC Decoder N=16.
 
 Project 8.4:
-    Yosys and OpenLane comparison for N=16.
+    Perform Yosys and OpenLane comparison for N=16.
 ```
 
 Project 8.1 is the required planning and verification foundation before N=16 RTL.
@@ -128,53 +142,97 @@ This distinction is important.
 
 ## 5. Core Conventions Preserved From N=8
 
-Project 8.1 must preserve all conventions used in the N=8 roadmap.
+Project 8.1 preserves all conventions used in the N=8 roadmap.
 
-### 5.1 LLR Width
+Changing these conventions without updating all Python models, RTL files, testbenches, and documentation would break consistency.
+
+---
+
+## 6. LLR Width Convention
+
+The project mainly uses:
 
 ```text
 W = 6
 ```
 
-Signed LLR range:
+A 6-bit signed LLR has range:
 
 ```text
 -32 to 31
 ```
 
-Intermediate f/g outputs may require:
+In the Python golden model, integer arithmetic is used, so overflow is not an issue.
+
+In RTL, however, intermediate-width policy must be handled carefully because g operations can increase magnitude.
+
+Examples:
 
 ```text
-W+1 or larger
+31 + 31 = 62
+-32 + -32 = -64
+31 - (-32) = 63
+-32 - 31 = -63
 ```
 
-For early N=16 modeling, Python can use integer arithmetic without overflow.
+Therefore, intermediate outputs may require:
 
-RTL width-growth policy must be decided carefully before hardware implementation.
+```text
+W+1 bits
+```
+
+or a carefully defined saturation/truncation policy in future RTL.
+
+For Project 8.1, the Python model is used as the mathematical reference.
 
 ---
 
-### 5.2 Hard Decision
+## 7. Hard-Decision Convention
+
+The hard-decision rule is:
 
 ```text
 LLR < 0  → decoded bit = 1
 LLR >= 0 → decoded bit = 0
 ```
 
----
-
-### 5.3 Frozen Mask
+This convention must be preserved in:
 
 ```text
-frozen_mask[i] = 1 → frozen bit, force u_i = 0
-frozen_mask[i] = 0 → information bit, use hard decision
+Python golden model
+CSV golden vectors
+Verilog RTL
+Verilog testbench
+future schedule-generated designs
 ```
 
 ---
 
-### 5.4 Bit Ordering
+## 8. Frozen-Mask Convention
 
-The project uses LSB-first convention:
+The frozen-mask convention is:
+
+```text
+frozen_mask[i] = 1 → bit i is frozen and forced to 0
+frozen_mask[i] = 0 → bit i is an information bit
+```
+
+For each leaf decision:
+
+```text
+if frozen_mask[i] = 1:
+    u_hat[i] = 0
+else:
+    u_hat[i] = hard_decision(LLR)
+```
+
+This convention is the same as Projects 5, 6, and 7.
+
+---
+
+## 9. Bit-Ordering Convention
+
+The project uses LSB-first bit indexing:
 
 ```text
 u_hat[0] = u0
@@ -183,55 +241,73 @@ u_hat[1] = u1
 u_hat[15] = u15
 ```
 
-Integer packing:
+Integer packing is:
 
 ```text
-u_hat_int = u0*2^0 + u1*2^1 + ... + u15*2^15
+u_hat_int = u0  * 2^0
+          + u1  * 2^1
+          + u2  * 2^2
+          + ...
+          + u15 * 2^15
 ```
 
-This convention must be used consistently in:
+Similarly:
 
 ```text
-Python golden model
-CSV vectors
+frozen_mask_int = frozen0  * 2^0
+                + frozen1  * 2^1
+                + ...
+                + frozen15 * 2^15
+```
+
+This convention must remain consistent across:
+
+```text
+Python model
+CSV file
 Verilog testbench
 future RTL
 documentation
 ```
 
+Bit-order mismatch is one of the most dangerous possible bugs.
+
 ---
 
-## 6. SC f And g Functions
+## 10. SC f Function Convention
 
-The N=16 decoder uses the same f/g functions as N=8.
-
-### 6.1 f Function
+The f function uses the min-sum approximation:
 
 ```text
 f(a,b) = sign(a) sign(b) min(|a|, |b|)
 ```
 
-Python form:
+Hardware interpretation:
 
 ```text
-mag = min(abs(a), abs(b))
+magnitude = min(|a|, |b|)
+negative  = sign(a) XOR sign(b)
 
-if (a < 0) XOR (b < 0):
-    y = -mag
+if negative:
+    y = -magnitude
 else:
-    y = mag
+    y = magnitude
 ```
+
+This is the same f function used in the N=8 roadmap.
 
 ---
 
-### 6.2 g Function
+## 11. SC g Function Convention
+
+The g function is:
 
 ```text
 g(a,b,u) = b + a, if u = 0
 g(a,b,u) = b - a, if u = 1
 ```
 
-The subtraction order remains:
+The subtraction order is critical:
 
 ```text
 b - a
@@ -243,9 +319,11 @@ not:
 a - b
 ```
 
+This convention is preserved from Projects 3, 5, 6, and 7.
+
 ---
 
-## 7. Recursive SC Decoder N=16 Structure
+## 12. Recursive SC Decoder N=16 Structure
 
 An N=16 SC decoder can be understood recursively.
 
@@ -278,7 +356,7 @@ This mirrors the N=8 decoder, but with N=8 sub-decoders instead of N=4 sub-decod
 
 ---
 
-## 8. Top-Level N=16 Schedule
+## 13. Top-Level N=16 Schedule
 
 Input LLRs:
 
@@ -359,9 +437,9 @@ u_hat[0:15] =
 
 ---
 
-## 9. Recursive Golden Model Algorithm
+## 14. Recursive Golden Model Algorithm
 
-The Python golden model should use a recursive implementation.
+The Python golden model uses a recursive SC decoder.
 
 Pseudocode:
 
@@ -391,7 +469,7 @@ SC_Decode(llrs, frozen_mask):
     return u_left + u_right
 ```
 
-This same function should support:
+This recursive function supports:
 
 ```text
 N=2
@@ -405,9 +483,9 @@ as long as N is a power of two.
 
 ---
 
-## 10. Polar Encode Function For Partial Sums
+## 15. Polar Encode Function For Partial Sums
 
-The partial sums should be generated using recursive Polar encoding.
+Partial sums are generated using recursive Polar encoding.
 
 Pseudocode:
 
@@ -421,23 +499,226 @@ Polar_Encode(u):
 
     half = N / 2
 
-    upper = []
-    lower = []
-
-    for i in 0..half-1:
-        upper[i] = u[i] XOR u[i+half]
-        lower[i] = u[i+half]
+    upper[i] = u[i] XOR u[i+half]
+    lower[i] = u[i+half]
 
     return Polar_Encode(upper) + Polar_Encode(lower)
 ```
 
 This must match the N=8 convention already used in previous projects.
 
+For N=8, the expanded form is:
+
+```text
+x0 = u0 ^ u1 ^ u2 ^ u3 ^ u4 ^ u5 ^ u6 ^ u7
+x1 = u1 ^ u3 ^ u5 ^ u7
+x2 = u2 ^ u3 ^ u6 ^ u7
+x3 = u3 ^ u7
+x4 = u4 ^ u5 ^ u6 ^ u7
+x5 = u5 ^ u7
+x6 = u6 ^ u7
+x7 = u7
+```
+
+The Project 8.1 Python model checks this convention internally.
+
 ---
 
-## 11. Operation Count For SC Decoder N=16
+## 16. Actual Golden Model Implementation
 
-For SC decoding with N = 16:
+The N=16 golden model has been implemented in:
+
+```text
+model/sc_decoder_n16_golden.py
+```
+
+The script provides:
+
+```text
+hard_decision()
+f_func()
+g_func()
+polar_encode()
+sc_decode()
+bits_to_int_lsb_first()
+operation_count()
+generate_vectors()
+```
+
+It also includes self-checks for:
+
+```text
+N=8 Polar encoding convention
+N=8 compatibility with previous Project 6.1 examples
+N=16 deterministic examples
+N=16 operation-count summary
+```
+
+This makes the N=16 model consistent with the previous N=8 roadmap.
+
+---
+
+## 17. Actual Golden Vector Generation Result
+
+The golden model successfully generated:
+
+```text
+tests/golden_vectors/sc_decoder_n16_vectors.csv
+tests/golden_vectors/sc_decoder_n16_summary.txt
+```
+
+Actual file information:
+
+```text
+-rw-r--r-- 1 lucero lucero 114K May  4 09:03 tests/golden_vectors/sc_decoder_n16_vectors.csv
+-rw-r--r-- 1 lucero lucero 742  May  4 09:03 tests/golden_vectors/sc_decoder_n16_summary.txt
+```
+
+The generated vector file has:
+
+```text
+1001 lines
+```
+
+This means:
+
+```text
+1 header line
+1000 golden-vector lines
+```
+
+This confirms that the N=16 golden-vector generation flow is working correctly.
+
+---
+
+## 18. Golden Vector CSV Format
+
+The CSV file has the following column groups:
+
+```text
+llr0..llr15
+frozen0..frozen15
+u_hat0..u_hat15
+frozen_mask_int
+u_hat_int
+```
+
+The header is:
+
+```text
+llr0,llr1,llr2,llr3,llr4,llr5,llr6,llr7,llr8,llr9,llr10,llr11,llr12,llr13,llr14,llr15,frozen0,frozen1,frozen2,frozen3,frozen4,frozen5,frozen6,frozen7,frozen8,frozen9,frozen10,frozen11,frozen12,frozen13,frozen14,frozen15,u_hat0,u_hat1,u_hat2,u_hat3,u_hat4,u_hat5,u_hat6,u_hat7,u_hat8,u_hat9,u_hat10,u_hat11,u_hat12,u_hat13,u_hat14,u_hat15,frozen_mask_int,u_hat_int
+```
+
+This format is suitable for a future Verilog testbench using `$fscanf`.
+
+---
+
+## 19. Example Generated Golden Vector
+
+One generated vector example is:
+
+```text
+llr = [-1, -8, 4, 8, -7, -6, -3, 7, -8, -7, -7, 0, 1, -3, 6, 6]
+```
+
+Frozen mask:
+
+```text
+frozen_mask = [1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0]
+```
+
+Expected decoded output:
+
+```text
+u_hat = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0]
+```
+
+Packed integers:
+
+```text
+frozen_mask_int = 18967
+u_hat_int = 13376
+```
+
+This confirms that each vector contains:
+
+```text
+16 LLR values
+16 frozen-mask bits
+16 expected decoded bits
+1 packed frozen-mask integer
+1 packed u_hat integer
+```
+
+---
+
+## 20. Actual N=16 Summary File Result
+
+The generated summary file reports:
+
+```text
+N = 16
+num_vectors = 1000
+llr_min = -8
+llr_max = 8
+seed = 20260503
+```
+
+The preserved conventions are:
+
+```text
+frozen_mask[i] = 1 means frozen; force u_i = 0
+frozen_mask[i] = 0 means information bit
+hard decision: LLR < 0 -> 1, otherwise 0
+bit packing: LSB-first
+g(a,b,u): b+a if u=0, b-a if u=1
+```
+
+These conventions match the N=8 roadmap and must remain unchanged in future N=16 RTL.
+
+---
+
+## 21. Confirmed N=16 Operation Count
+
+The generated summary reports:
+
+```text
+N = 16
+levels = 4
+f_ops = 32
+g_ops = 32
+hard_decisions = 16
+partial_xors_est = 24
+fg_ops_total = 64
+fg_plus_hard_decisions = 80
+latency_lower_bound_cycles = 80
+latency_conservative_est_cycles = 104
+```
+
+This confirms the theoretical analysis.
+
+The basic SC operation count for N=16 is:
+
+```text
+32 f operations
+32 g operations
+16 hard decisions
+```
+
+Therefore:
+
+```text
+f/g operations total = 64
+f/g + hard decisions = 80
+```
+
+This is the minimum architectural workload before considering partial-sum scheduling.
+
+---
+
+## 22. Operation Count Derivation
+
+For SC decoding with N=16:
 
 ```text
 log2(N) = 4
@@ -458,8 +739,8 @@ log2(N) = 4 levels
 Therefore:
 
 ```text
-total f operations = (N/2) * log2(N)
-                   = 8 * 4
+total f operations = (N/2) × log2(N)
+                   = 8 × 4
                    = 32
 ```
 
@@ -475,7 +756,7 @@ The number of hard decisions is:
 N = 16
 ```
 
-Therefore, the basic operation count is:
+Therefore:
 
 ```text
 f operations      = 32
@@ -483,78 +764,59 @@ g operations      = 32
 hard decisions    = 16
 ```
 
-Total core SC operations:
+Total f/g/hard-decision workload:
 
 ```text
 32 + 32 + 16 = 80
 ```
 
-This is a lower-bound schedule count if one shared f/g datapath computes one f or g operation per cycle and hard decisions are handled separately or in nearby states.
-
 ---
 
-## 12. Partial-Sum Operation Count
+## 23. Partial-Sum Operation Estimate
 
 Partial sums are needed before g operations at every internal node.
 
 For N=16, partial-sum generation occurs at multiple node sizes.
 
-Top-level partial sums:
+Top-level partial sums use:
 
 ```text
 Polar_Encode_N8
 ```
 
-requires approximately:
+Estimated XOR operations:
 
 ```text
-(8/2) * log2(8) = 4 * 3 = 12 XOR operations
+(8/2) × log2(8) = 4 × 3 = 12
 ```
 
 Two N=8 subtrees require N=4 partial sums:
 
 ```text
-2 × [(4/2) * log2(4)] = 2 × 4 = 8 XOR operations
+2 × [(4/2) × log2(4)] = 2 × 4 = 8
 ```
 
 Four N=4 subtrees require N=2 partial sums:
 
 ```text
-4 × [(2/2) * log2(2)] = 4 × 1 = 4 XOR operations
+4 × [(2/2) × log2(2)] = 4 × 1 = 4
 ```
 
-N=2 subtrees require N=1 partials, which are direct wires:
+Total estimated staged partial-sum XOR operations:
 
 ```text
-0 XOR operations
+12 + 8 + 4 = 24
 ```
 
-Estimated total partial-sum XOR operations:
+This matches the generated summary:
 
 ```text
-12 + 8 + 4 = 24 XOR operations
+partial_xors_est = 24
 ```
-
-This count is useful for schedule and hardware planning.
 
 ---
 
-## 13. Operation Count Summary
-
-| Operation Type | Count For N=16 |
-|---|---:|
-| f operations | 32 |
-| g operations | 32 |
-| hard decisions | 16 |
-| partial-sum XOR operations | about 24 |
-| core f/g operations total | 64 |
-| f/g + hard decisions | 80 |
-
-This is the first important quantitative result of Project 8.1.
-
----
-
-## 14. Lower-Bound Latency Estimate
+## 24. Latency Estimate
 
 For a fully resource-shared datapath that computes one f or g operation per cycle:
 
@@ -568,93 +830,236 @@ If hard decisions are one cycle each:
 hard-decision cycles = 16 cycles
 ```
 
-Then:
+Then the lower-bound latency is:
 
 ```text
-basic latency lower bound = 64 + 16 = 80 cycles
+64 + 16 = 80 cycles
 ```
 
-If partial-sum computation is done in additional cycles, add approximately:
+If partial-sum XORs are scheduled as additional staged operations:
 
 ```text
-partial-sum cycles = 24 cycles
+partial_xors_est = 24
 ```
 
-Then a conservative estimate is:
+Then the conservative estimate is:
 
 ```text
-80 to 104 cycles
+80 + 24 = 104 cycles
 ```
 
-Therefore, an early expected latency range for N=16 resource-shared decoder is:
+Therefore, the early N=16 resource-shared latency range is:
 
 ```text
-about 80–104 cycles
+80–104 cycles
 ```
 
-depending on whether hard decision and partial-sum logic are combined with other states.
+depending on how partial sums and hard decisions are integrated in the final RTL schedule.
 
 ---
 
-## 15. Why Latency Estimate Matters
+## 25. Schedule Generator Implementation
 
-N=8 showed that resource sharing improves area and timing, but increases multi-cycle latency.
-
-For N=16, latency becomes even more important.
-
-A fair comparison must include:
+A recursive schedule generator has been added:
 
 ```text
-clock period
-latency cycles
-decode time
-throughput
-area
-area-latency product
+model/sc_schedule_generator.py
 ```
 
-Before RTL, Project 8.1 should estimate the latency.
+This script is responsible for generating a recursive SC decoding schedule for future resource-shared RTL implementation.
 
-After RTL, the testbench should measure it.
+Expected generated files are:
+
+```text
+results/schedules/sc_decoder_n16_schedule.csv
+results/schedules/sc_decoder_n16_schedule.md
+results/schedules/sc_decoder_n16_operation_count.json
+```
+
+The schedule generator provides a bridge between:
+
+```text
+Python golden model
+```
+
+and:
+
+```text
+future resource-shared N=16 RTL
+```
+
+This is important because manual N=16 RTL scheduling is error-prone.
 
 ---
 
-## 16. Effective Decode Time Formula
+## 26. Schedule Generator Output
 
-If the final N=16 shared decoder has:
+The expected output from the schedule generator is:
 
 ```text
-latency_cycles = L
-clock_period_ns = T
+[OK] Generated schedule for N=16
+[OK] Rows: 112
 ```
 
-then:
+The expected operation-count JSON is:
 
-```text
-decode_time_ns = L × T
+```json
+{
+  "N": 16,
+  "levels": 4,
+  "f_ops": 32,
+  "g_ops": 32,
+  "hard_decisions": 16,
+  "partial_output_rows": 32,
+  "partial_xors_est_staged": 24,
+  "fg_ops_total": 64,
+  "fg_plus_hard_decisions": 80,
+  "latency_lower_bound_cycles": 80,
+  "latency_if_partial_outputs_one_cycle_each": 112,
+  "latency_conservative_est_cycles": 104
+}
 ```
 
-Throughput:
+The difference between latency estimates is important.
 
 ```text
-throughput_vectors_per_second = 1 / (decode_time_ns × 1e-9)
+latency_lower_bound_cycles = 80
+```
+
+counts:
+
+```text
+f operations + g operations + hard decisions
+```
+
+The estimate:
+
+```text
+latency_if_partial_outputs_one_cycle_each = 112
+```
+
+assumes each documented partial-output row is treated as a separate explicit cycle.
+
+The estimate:
+
+```text
+latency_conservative_est_cycles = 104
+```
+
+uses staged partial-sum XOR cost instead of one cycle per partial-output row.
+
+---
+
+## 27. Interpretation Of Schedule Row Count
+
+The generated schedule contains:
+
+```text
+112 rows
+```
+
+These rows include:
+
+```text
+F operation rows
+G operation rows
+DECISION rows
+PARTIAL rows
+```
+
+The important distinction is:
+
+```text
+Schedule rows are documentation/control steps.
+They are not necessarily final RTL cycles one-to-one.
+```
+
+In actual RTL, some partial sums may be:
+
+```text
+computed combinationally
+grouped into one state
+or written explicitly into registers
+```
+
+Therefore, Project 8.1 should not prematurely claim final N=16 latency.
+
+The current latency estimate should be treated as:
+
+```text
+architectural planning estimate
+```
+
+not final measured RTL latency.
+
+---
+
+## 28. Schedule Table Requirement For RTL
+
+Before writing N=16 RTL, create or inspect a schedule table.
+
+Each row should include:
+
+```text
+step_id
+node_id
+node_size
+operation type
+operand A source
+operand B source
+g control bit source
+destination
+dependency
+comment
 ```
 
 Example:
 
-```text
-If L = 100 cycles
-and T = 15 ns
+| Step | Node | Size | Operation | Operand A | Operand B | g bit | Destination |
+|---:|---|---:|---|---|---|---|---|
+| 0 | ROOT | 16 | F | L0 | L8 | - | left0 |
+| 1 | ROOT | 16 | F | L1 | L9 | - | left1 |
+| 2 | ROOT | 16 | F | L2 | L10 | - | left2 |
+| 8 | left | 8 | F | left0 | left4 | - | left_left0 |
 
-decode_time = 1500 ns
-throughput ≈ 666,666 vectors/s
-```
-
-This is only an example. Actual values must be measured after RTL.
+This schedule table should become the reference for future RTL design.
 
 ---
 
-## 17. Storage Requirement Analysis
+## 29. Why Schedule Generation Is Better Than Manual RTL
+
+Manual RTL worked for N=8.
+
+For N=16, manual RTL becomes harder.
+
+For N=32 or N=64, manual RTL becomes unsafe.
+
+A schedule generator can produce:
+
+```text
+operation list
+dependency list
+latency estimate
+testbench reference
+documentation table
+possibly RTL control table
+```
+
+This supports the stronger research direction:
+
+```text
+schedule-generated resource-shared SC Polar decoder
+```
+
+rather than:
+
+```text
+manually written decoder for each N
+```
+
+---
+
+## 30. Storage Requirement Analysis
 
 A resource-shared N=16 decoder needs internal storage for:
 
@@ -678,13 +1083,14 @@ At minimum, storage includes:
 intermediate LLR storage at multiple tree levels
 partial-sum registers
 state register
+control registers
 ```
 
 A careful storage map should be created before RTL.
 
 ---
 
-## 18. Suggested Internal Storage For N=16
+## 31. Suggested Internal Storage For N=16
 
 A practical manually written design may use named registers such as:
 
@@ -711,248 +1117,20 @@ done
 
 However, this manual naming becomes difficult.
 
-For scalability, a better approach is to use arrays in SystemVerilog or a generated Verilog style.
+For scalability, a better approach is to use:
 
-If using pure Verilog-2001 for compatibility, flattened register naming may be required.
+```text
+arrays in SystemVerilog
+or generated Verilog with flattened register names
+```
+
+If using pure Verilog-2001 for tool compatibility, flattened register naming may be required.
 
 ---
 
-## 19. Schedule Table Requirement
+## 32. Expected Project 8.1 File Structure
 
-Before writing N=16 RTL, create a schedule table.
-
-Each row should include:
-
-```text
-step_id
-node_id
-node_size
-operation type
-operand A source
-operand B source
-g control bit source
-destination
-dependency
-comment
-```
-
-Example:
-
-| Step | Node | Size | Operation | Operand A | Operand B | g bit | Destination |
-|---:|---|---:|---|---|---|---|---|
-| 0 | root | 16 | f | L0 | L8 | - | left0 |
-| 1 | root | 16 | f | L1 | L9 | - | left1 |
-| 2 | root | 16 | f | L2 | L10 | - | left2 |
-| 8 | left | 8 | f | left0 | left4 | - | left_left0 |
-| ... | ... | ... | ... | ... | ... | ... | ... |
-
-This schedule table should be generated by Python if possible.
-
----
-
-## 20. Why Schedule Generation Is Better Than Manual RTL
-
-Manual RTL worked for N=8.
-
-For N=16, manual RTL becomes harder.
-
-For N=32 or N=64, manual RTL becomes unsafe.
-
-A schedule generator can produce:
-
-```text
-operation list
-dependency list
-latency estimate
-testbench reference
-possibly RTL control table
-documentation table
-```
-
-This is the foundation of a stronger research direction.
-
-The long-term direction should be:
-
-```text
-schedule-generated resource-shared SC Polar decoder
-```
-
-not simply:
-
-```text
-manually written N=16 decoder
-```
-
----
-
-## 21. Proposed Python Files
-
-Project 8.1 should create or prepare:
-
-```text
-model/sc_decoder_n16_golden.py
-model/sc_schedule_generator.py
-```
-
-The golden model file should generate:
-
-```text
-tests/golden_vectors/sc_decoder_n16_vectors.csv
-tests/golden_vectors/sc_decoder_n16_summary.txt
-```
-
-The schedule generator should generate:
-
-```text
-results/schedules/sc_decoder_n16_schedule.csv
-results/schedules/sc_decoder_n16_schedule.md
-results/schedules/sc_decoder_n16_operation_count.json
-```
-
----
-
-## 22. Expected CSV Format For Golden Vectors
-
-The N=16 golden vector CSV should include:
-
-```text
-llr0..llr15
-frozen0..frozen15
-u_hat0..u_hat15
-frozen_mask_int
-u_hat_int
-```
-
-Header example:
-
-```text
-llr0,llr1,llr2,llr3,llr4,llr5,llr6,llr7,llr8,llr9,llr10,llr11,llr12,llr13,llr14,llr15,
-frozen0,frozen1,...,frozen15,
-u_hat0,u_hat1,...,u_hat15,
-frozen_mask_int,u_hat_int
-```
-
-The exact CSV should be single-line header without spaces for easy Verilog parsing.
-
----
-
-## 23. Recommended Number Of Golden Vectors
-
-For early verification:
-
-```text
-1000 random vectors
-```
-
-is acceptable.
-
-For stronger regression:
-
-```text
-5000 to 10000 vectors
-```
-
-can be generated later.
-
-The initial Project 8.1 target should be:
-
-```text
-1000 N=16 golden vectors
-```
-
-This keeps simulation manageable.
-
----
-
-## 24. Basic Test Cases For N=16 Golden Model
-
-Before generating random vectors, the Python model should run basic tests.
-
-Recommended basic tests:
-
-```text
-1. all LLRs zero, all frozen
-2. all LLRs positive, all information
-3. all LLRs negative, all information
-4. alternating positive/negative LLRs
-5. first half frozen, second half information
-6. common polar-style mask with low-reliability bits frozen
-```
-
-These tests help detect convention errors.
-
----
-
-## 25. Validation Checklist For Python Golden Model
-
-Project 8.1 golden model is complete if:
-
-```text
-model/sc_decoder_n16_golden.py exists
-recursive SC decoder supports N=16
-polar_encode function works for N=1,2,4,8,16
-f and g functions match N=8 convention
-hard decision matches N=8 convention
-frozen-mask convention is preserved
-basic tests pass
-CSV vectors are generated
-CSV has expected header
-CSV has expected number of lines
-summary file is generated
-```
-
-Recommended checks:
-
-```bash
-cd ~/ic_design_projects/fixed_point_arithmetic_asic_ready
-
-python3 model/sc_decoder_n16_golden.py
-
-ls -lh tests/golden_vectors/sc_decoder_n16_vectors.csv
-ls -lh tests/golden_vectors/sc_decoder_n16_summary.txt
-
-head -3 tests/golden_vectors/sc_decoder_n16_vectors.csv
-wc -l tests/golden_vectors/sc_decoder_n16_vectors.csv
-```
-
-If generating 1000 vectors:
-
-```text
-wc -l should report 1001
-```
-
----
-
-## 26. Validation Checklist For Schedule Analysis
-
-Schedule analysis is complete if:
-
-```text
-operation count is generated
-f operation count = 32
-g operation count = 32
-hard decision count = 16
-partial-sum XOR estimate is documented
-schedule table is generated
-dependency order is valid
-estimated latency range is documented
-storage requirement is documented
-resource-shared mapping plan is documented
-```
-
-Recommended output files:
-
-```text
-results/schedules/sc_decoder_n16_schedule.csv
-results/schedules/sc_decoder_n16_schedule.md
-results/schedules/sc_decoder_n16_operation_count.json
-```
-
----
-
-## 27. Expected File Structure
-
-Expected Project 8.1 structure:
+Project 8.1 now has or targets the following structure:
 
 ```text
 model/
@@ -975,47 +1153,95 @@ docs/
     sc_decoder_n16_golden_model_and_schedule_analysis.md
 ```
 
----
-
-## 28. Proposed Development Steps
-
-Project 8.1 should be executed in this order:
+This means Project 8.1 contains both:
 
 ```text
-Step 1:
-    Write or extend recursive Python SC decoder to support N=16.
+1. Correctness reference
+2. Architecture schedule reference
+```
 
-Step 2:
-    Verify polar_encode for N=2,4,8,16.
+These are the two foundations required before N=16 RTL.
 
-Step 3:
-    Run basic deterministic N=16 tests.
+---
 
-Step 4:
-    Generate 1000 random N=16 golden vectors.
+## 33. Validation Checklist For Golden Model
 
-Step 5:
-    Create schedule generator or manual schedule table.
+The N=16 golden model is complete if:
 
-Step 6:
-    Count f/g/hard-decision/partial-sum operations.
+```text
+model/sc_decoder_n16_golden.py exists
+recursive SC decoder supports N=16
+polar_encode function works for N=1,2,4,8,16
+f and g functions match N=8 convention
+hard decision matches N=8 convention
+frozen-mask convention is preserved
+basic tests pass
+CSV vectors are generated
+CSV has expected header
+CSV has expected number of lines
+summary file is generated
+```
 
-Step 7:
-    Estimate resource-shared latency.
+Recommended commands:
 
-Step 8:
-    Document storage requirements.
+```bash
+cd ~/ic_design_projects/fixed_point_arithmetic_asic_ready
 
-Step 9:
-    Commit golden model, vectors, schedule summary, and documentation.
+python3 model/sc_decoder_n16_golden.py
 
-Step 10:
-    Only then move to N=16 RTL.
+ls -lh tests/golden_vectors/sc_decoder_n16_vectors.csv
+ls -lh tests/golden_vectors/sc_decoder_n16_summary.txt
+
+head -3 tests/golden_vectors/sc_decoder_n16_vectors.csv
+wc -l tests/golden_vectors/sc_decoder_n16_vectors.csv
+
+cat tests/golden_vectors/sc_decoder_n16_summary.txt
+```
+
+Expected key check:
+
+```text
+1001 tests/golden_vectors/sc_decoder_n16_vectors.csv
 ```
 
 ---
 
-## 29. Risk Analysis Before RTL
+## 34. Validation Checklist For Schedule Analysis
+
+The schedule analysis is complete if:
+
+```text
+model/sc_schedule_generator.py exists
+results/schedules/sc_decoder_n16_schedule.csv exists
+results/schedules/sc_decoder_n16_schedule.md exists
+results/schedules/sc_decoder_n16_operation_count.json exists
+f operation count = 32
+g operation count = 32
+hard decision count = 16
+partial output rows = 32
+staged partial XOR estimate = 24
+schedule rows = 112
+latency estimates are documented
+```
+
+Recommended commands:
+
+```bash
+cd ~/ic_design_projects/fixed_point_arithmetic_asic_ready
+
+python3 model/sc_schedule_generator.py
+
+ls -lh results/schedules/sc_decoder_n16_schedule.csv
+ls -lh results/schedules/sc_decoder_n16_schedule.md
+ls -lh results/schedules/sc_decoder_n16_operation_count.json
+
+head -5 results/schedules/sc_decoder_n16_schedule.csv
+cat results/schedules/sc_decoder_n16_operation_count.json
+```
+
+---
+
+## 35. Risk Analysis Before N=16 RTL
 
 Main risks:
 
@@ -1037,30 +1263,29 @@ Mitigation:
 2. Generate CSV vectors automatically.
 3. Generate schedule table before RTL.
 4. Keep all conventions identical to N=8.
-5. Start with reference combinational/scheduled model before optimizing.
+5. Start with a reference RTL baseline before optimizing heavily.
 6. Add latency-cycle counter in testbench.
+7. Compare RTL against golden vectors.
 ```
 
 ---
 
-## 30. Recommended Architecture Direction For N=16
+## 36. Recommended Architecture Direction For N=16
 
-Based on Project 7.7, the best direction is not to build only a combinational N=16 decoder.
-
-The recommended direction is:
+Based on Project 7.7, the best direction is:
 
 ```text
 resource-shared scheduled SC Decoder N=16
 ```
 
-However, for verification, it may still be useful to have a reference combinational or recursive RTL version.
+However, for verification and learning, it is still useful to have a reference baseline.
 
 Recommended architecture sequence:
 
 ```text
 1. Python golden model N=16
 2. schedule table N=16
-3. optional combinational/reference RTL N=16
+3. reference RTL baseline N=16
 4. resource-shared scheduled RTL N=16
 5. Yosys comparison
 6. OpenLane physical validation
@@ -1068,42 +1293,54 @@ Recommended architecture sequence:
 
 ---
 
-## 31. Expected Research Contribution After N=16
+## 37. Recommended Project 8.2 Direction
 
-After completing N=16, the work becomes stronger.
-
-Potential contribution:
+Project 8.2 should be:
 
 ```text
-A resource-shared scheduled SC Polar decoder architecture with open-source RTL-to-GDSII validation.
+SC Decoder N=16 Reference RTL Baseline
 ```
 
-To make the contribution credible, include:
+Possible options:
 
 ```text
-N=8 and N=16 results
-operation-count analysis
-latency analysis
-Yosys synthesis comparison
-OpenLane physical comparison
-area/timing trade-off
-discussion of scalability
+Option A:
+    combinational/reference RTL N=16 for correctness baseline
+
+Option B:
+    schedule-driven multi-cycle RTL N=16 using generated schedule
+
+Option C:
+    directly implement resource-shared N=16 based on generated schedule
 ```
+
+The safest academic route is:
+
+```text
+Project 8.2:
+    reference RTL baseline
+
+Project 8.3:
+    resource-shared scheduled RTL
+```
+
+This avoids mixing correctness validation and architecture optimization too early.
 
 ---
 
-## 32. Minimum Results Needed Before A Paper Draft
+## 38. Minimum Results Needed Before Paper Draft
 
 Before writing a strong conference paper, aim to have:
 
 ```text
 1. N=8 combinational vs resource-shared comparison
 2. N=16 golden model
-3. N=16 resource-shared RTL verification
-4. N=16 Yosys synthesis result
-5. at least one N=16 OpenLane run
-6. latency-cycle measurement
-7. clear area/timing/latency trade-off table
+3. N=16 reference RTL verification
+4. N=16 resource-shared RTL verification
+5. N=16 Yosys synthesis result
+6. at least one N=16 OpenLane run
+7. latency-cycle measurement
+8. clear area/timing/latency trade-off table
 ```
 
 Before a Q1 journal, likely need:
@@ -1111,62 +1348,46 @@ Before a Q1 journal, likely need:
 ```text
 N=32 or broader scalability
 more rigorous comparison
-possibly FPGA or ASIC multi-corner results
-power/energy estimate
+possibly FPGA validation
+possibly ASIC multi-corner results
+power/energy estimate under consistent activity
 better automation and schedule generation
 ```
 
 ---
 
-## 33. Project 8.1 Deliverables
+## 39. Updated Project 8.1 Deliverables
 
-Project 8.1 should deliver:
+Project 8.1 deliverables are:
 
-```text
-1. documentation file:
-   docs/project8_1/sc_decoder_n16_golden_model_and_schedule_analysis.md
-
-2. Python golden model:
-   model/sc_decoder_n16_golden.py
-
-3. golden vectors:
-   tests/golden_vectors/sc_decoder_n16_vectors.csv
-
-4. summary:
-   tests/golden_vectors/sc_decoder_n16_summary.txt
-
-5. schedule analysis:
-   results/schedules/sc_decoder_n16_schedule.csv
-   results/schedules/sc_decoder_n16_schedule.md
-   results/schedules/sc_decoder_n16_operation_count.json
-```
-
-This documentation file is the first deliverable.
-
-Code and generated files should be created next.
-
----
-
-## 34. What To Commit At This Stage
-
-At the documentation stage, commit:
+### Documentation
 
 ```text
 docs/project8_1/sc_decoder_n16_golden_model_and_schedule_analysis.md
 ```
 
-After implementing the Python model, commit:
+### Golden Model
 
 ```text
 model/sc_decoder_n16_golden.py
+```
+
+### Golden Vectors
+
+```text
 tests/golden_vectors/sc_decoder_n16_vectors.csv
 tests/golden_vectors/sc_decoder_n16_summary.txt
 ```
 
-After schedule generation, commit:
+### Schedule Generator
 
 ```text
 model/sc_schedule_generator.py
+```
+
+### Schedule Outputs
+
+```text
 results/schedules/sc_decoder_n16_schedule.csv
 results/schedules/sc_decoder_n16_schedule.md
 results/schedules/sc_decoder_n16_operation_count.json
@@ -1174,64 +1395,147 @@ results/schedules/sc_decoder_n16_operation_count.json
 
 ---
 
-## 35. Recommended Git Commands
+## 40. What To Commit
 
-For this documentation file:
+At this stage, commit:
 
-```bash
-git add docs/project8_1/sc_decoder_n16_golden_model_and_schedule_analysis.md
-git commit -m "docs: add project8.1 SC decoder N16 golden model and schedule analysis"
-git push origin main
+```text
+docs/project8_1/sc_decoder_n16_golden_model_and_schedule_analysis.md
+model/sc_decoder_n16_golden.py
+tests/golden_vectors/sc_decoder_n16_vectors.csv
+tests/golden_vectors/sc_decoder_n16_summary.txt
+model/sc_schedule_generator.py
+results/schedules/sc_decoder_n16_schedule.csv
+results/schedules/sc_decoder_n16_schedule.md
+results/schedules/sc_decoder_n16_operation_count.json
 ```
 
-After Python model and generated vectors are added, use a separate commit.
-
-Recommended future commit:
+Recommended commits:
 
 ```bash
-git add model/sc_decoder_n16_golden.py tests/golden_vectors/sc_decoder_n16_vectors.csv tests/golden_vectors/sc_decoder_n16_summary.txt
+git add model/sc_decoder_n16_golden.py \
+        tests/golden_vectors/sc_decoder_n16_vectors.csv \
+        tests/golden_vectors/sc_decoder_n16_summary.txt
+
 git commit -m "model: add SC decoder N16 golden model and vectors"
-git push origin main
+
+git add model/sc_schedule_generator.py \
+        results/schedules/sc_decoder_n16_schedule.csv \
+        results/schedules/sc_decoder_n16_schedule.md \
+        results/schedules/sc_decoder_n16_operation_count.json
+
+git commit -m "model: add SC decoder N16 schedule generator and schedule analysis"
+
+git add docs/project8_1/sc_decoder_n16_golden_model_and_schedule_analysis.md
+
+git commit -m "docs: rewrite project8.1 N16 golden model and schedule analysis"
 ```
 
 ---
 
-## 36. Project 8.1 Conclusion
+## 41. Readiness Checklist Before Project 8.2
 
-Project 8.1 begins the N=16 expansion in a controlled and academically correct way.
+Before moving to Project 8.2, verify:
+
+```bash
+cd ~/ic_design_projects/fixed_point_arithmetic_asic_ready
+
+git status
+
+python3 model/sc_decoder_n16_golden.py
+python3 model/sc_schedule_generator.py
+
+wc -l tests/golden_vectors/sc_decoder_n16_vectors.csv
+cat tests/golden_vectors/sc_decoder_n16_summary.txt
+cat results/schedules/sc_decoder_n16_operation_count.json
+
+find docs/project8_1 model tests/golden_vectors results/schedules -maxdepth 2 -type f | sort
+```
+
+Expected key results:
+
+```text
+working tree clean after commit
+sc_decoder_n16_vectors.csv has 1001 lines
+f_ops = 32
+g_ops = 32
+hard_decisions = 16
+latency_lower_bound_cycles = 80
+latency_conservative_est_cycles = 104
+schedule rows = 112
+```
+
+---
+
+## 42. Academic Interpretation
+
+Project 8.1 is a proper pre-RTL architecture preparation project.
+
+It provides:
+
+```text
+a working recursive golden model
+a generated golden-vector dataset
+a reproducible operation-count summary
+a schedule generator
+a schedule table for resource-shared planning
+```
+
+This is academically stronger than jumping directly into RTL.
+
+The current Project 8.1 result supports the following statement:
+
+```text
+The N=16 decoder expansion is grounded in a verified recursive golden model and an explicit SC operation schedule, reducing the risk of RTL-level indexing, partial-sum, and dependency errors.
+```
+
+---
+
+## 43. Project 8.1 Conclusion
+
+Project 8.1 successfully establishes the pre-RTL foundation for SC Decoder N=16.
+
+The project now includes:
+
+```text
+Python golden model
+1000 golden vectors
+operation-count summary
+schedule generator
+generated schedule table
+latency estimates
+```
+
+Confirmed golden-model results:
+
+```text
+N = 16
+num_vectors = 1000
+CSV lines = 1001
+f_ops = 32
+g_ops = 32
+hard_decisions = 16
+partial_xors_est = 24
+latency_lower_bound_cycles = 80
+latency_conservative_est_cycles = 104
+```
+
+Expected schedule-generator result:
+
+```text
+schedule rows = 112
+partial_output_rows = 32
+latency_if_partial_outputs_one_cycle_each = 112
+```
 
 The main conclusion is:
 
 ```text
-Do not write N=16 RTL before the golden model and schedule analysis are stable.
+N=16 RTL should now be developed from the verified golden model and generated schedule, not by manual intuition alone.
 ```
 
-The expected N=16 operation count is:
+The next step is:
 
 ```text
-f operations   = 32
-g operations   = 32
-hard decisions = 16
+Project 8.2: SC Decoder N=16 Reference RTL Baseline
 ```
-
-The estimated resource-shared latency lower bound is:
-
-```text
-about 80 cycles
-```
-
-A conservative estimate including partial-sum scheduling is:
-
-```text
-about 80–104 cycles
-```
-
-The key next step after this documentation is:
-
-```text
-implement model/sc_decoder_n16_golden.py
-generate N=16 golden vectors
-generate N=16 schedule table
-```
-
-Only after that should Project 8.2 begin RTL implementation.
