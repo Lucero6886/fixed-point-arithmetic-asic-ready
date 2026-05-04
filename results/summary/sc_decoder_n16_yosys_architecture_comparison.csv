@@ -1,0 +1,15 @@
+metric_key,metric,reference_n16,shared_n16,shared_over_reference_ratio,reduction_from_reference
+wires,Wires,4850,2142,0.442×,55.84%
+wire_bits,Wire bits,7654,3217,0.420×,57.97%
+public_wires,Public wires,435,179,0.411×,58.85%
+public_wire_bits,Public wire bits,3239,1246,0.385×,61.53%
+total_cells,Total cells,4431,2660,0.600×,39.97%
+dff_dffe_cells_raw,Raw DFF/DFFE cells,0,681,inf,N/A
+estimated_comb_cells,Estimated combinational cells,4431,1979,0.447×,55.34%
+mux_cells,MUX cells,326,18,0.055×,94.48%
+xor_cells,XOR cells,242,20,0.083×,91.74%
+xnor_cells,XNOR cells,393,28,0.071×,92.88%
+xor_xnor_cells,XOR + XNOR cells,635,48,0.076×,92.44%
+nand_cells,NAND cells,1322,840,0.635×,36.46%
+and_cells,AND cells,0,894,inf,N/A
+or_cells,OR cells,0,29,inf,N/A
