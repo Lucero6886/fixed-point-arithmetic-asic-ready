@@ -940,4 +940,3 @@ The signed subtractor is a necessary primitive for the SC g operation, where the
 This project strengthens the arithmetic foundation needed for later SC Polar decoder hardware.
 
 The next step is Project 1.3: Absolute Value Unit.
-EOF
