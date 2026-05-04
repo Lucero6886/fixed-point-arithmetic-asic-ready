@@ -1,0 +1,29 @@
+# Project 8.2.1: Yosys synthesis for SC Decoder N=16 reference RTL
+#
+# Top module:
+#   sc_decoder_n16_ref
+#
+# Purpose:
+#   Flattened synthesis baseline for the combinational/reference N=16 SC decoder.
+#
+# Notes:
+#   This is not an optimized resource-shared architecture.
+#   This is a correctness/reference baseline for later comparison.
+
+read_verilog -sv rtl/sc_decoder_n16_ref.v
+
+hierarchy -check -top sc_decoder_n16_ref
+
+proc
+opt
+flatten
+opt
+
+techmap
+opt
+
+abc
+opt
+clean
+
+stat
