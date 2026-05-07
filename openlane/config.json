@@ -1,0 +1,22 @@
+{
+    "DESIGN_NAME": "sc_decoder_n16_shared_top",
+    "VERILOG_FILES": "dir::src/*.v",
+
+    "CLOCK_PORT": "clk",
+    "CLOCK_PERIOD": 30,
+
+    "FP_SIZING": "absolute",
+    "DIE_AREA": "0 0 1000 1000",
+    "FP_CORE_UTIL": 40,
+    "PL_TARGET_DENSITY": 0.35,
+
+    "SYNTH_STRATEGY": "AREA 0",
+    "MAX_FANOUT_CONSTRAINT": 10,
+
+    "GRT_ADJUSTMENT": 0.3,
+    "GRT_REPAIR_ANTENNAS": 1,
+    "RUN_HEURISTIC_DIODE_INSERTION": 1,
+
+    "FP_PDN_HPITCH": 153.18,
+    "FP_PDN_VPITCH": 153.6
+}

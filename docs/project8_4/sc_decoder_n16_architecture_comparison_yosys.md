@@ -111,13 +111,67 @@ area-latency product
 
 ## 7. Interpretation
 
-The resource-shared N=16 decoder reduces the estimated combinational cell count relative to the reference N=16 RTL. This supports the resource-sharing hypothesis at synthesis level.
+The Yosys comparison shows that the resource-shared scheduled SC Decoder N=16 significantly reduces the estimated combinational complexity compared with the reference N=16 RTL.
 
-The total cell count is also lower for the resource-shared design.
+The most important result is:
 
-The resource-shared design has more DFF/DFFE cells, as expected for a multi-cycle scheduled architecture.
+```text
+Estimated combinational cells:
+Reference N=16 = 4431
+Shared N=16    = 1979
+Reduction      = 55.34%
+```
 
-The measured latency of the resource-shared N=16 decoder is 115 cycles, so final conclusions must be latency-aware rather than based on cell count alone.
+This result supports the resource-sharing hypothesis at the synthesis level. Although the shared architecture introduces 681 DFF/DFFE cells for FSM control, LLR storage, partial-sum storage, decoded-bit storage, and output/control registers, the duplicated combinational logic is substantially reduced.
+
+The total cell count also decreases:
+
+```text
+Total cells:
+Reference N=16 = 4431
+Shared N=16    = 2660
+Reduction      = 39.97%
+```
+
+This is particularly meaningful because the shared design achieves this reduction despite introducing sequential storage.
+
+The interconnect-related metrics also improve:
+
+```text
+Wires:
+4850 → 2142
+Reduction = 55.84%
+
+Wire bits:
+7654 → 3217
+Reduction = 57.97%
+```
+
+This suggests that resource sharing reduces not only arithmetic duplication but also internal wiring complexity.
+
+The largest reductions are observed in MUX and XOR/XNOR cells:
+
+```text
+MUX cells:
+326 → 18
+Reduction = 94.48%
+
+XOR + XNOR cells:
+635 → 48
+Reduction = 92.44%
+```
+
+These reductions are consistent with the expected effect of reusing a shared f/g datapath instead of instantiating a large combinational decoding tree.
+
+However, the shared decoder is multi-cycle. Project 8.3 measured a deterministic latency of:
+
+```text
+latency_cycles = 115
+```
+
+Therefore, the correct conclusion is not simply that the shared design is faster. The correct conclusion is that the shared architecture reduces synthesis-level combinational complexity and total cell count, at the cost of sequential storage and multi-cycle latency.
+
+A final performance conclusion requires physical implementation and timing analysis through OpenLane, including clock period, critical path, area, and effective decode time.
 
 ---
 
